@@ -1,11 +1,8 @@
-# sherif-multi-platform-bot
+# shegraf
 
 Multi-platform bot for **WhatsApp (Baileys)**, **Telegram**, and **Discord** with colorful buttons and WhatsApp pairing code support.
 
 This package is designed so anyone can quickly run a personal or small‑scale bot without touching the internal code.
-
-> Note: The package name in this README assumes `sherif-multi-platform-bot`.  
-> If you publish under a different name, replace it accordingly.
 
 ---
 
@@ -31,13 +28,13 @@ This package is designed so anyone can quickly run a personal or small‑scale b
 Install globally (recommended for running the bot from anywhere):
 
 ```bash
-npm install -g sherif-multi-platform-bot
+npm install -g shegraf
 ```
 
 Or use it once without global install:
 
 ```bash
-npx sherif-multi-platform-bot
+npx shegraf
 ```
 
 ---
@@ -47,7 +44,7 @@ npx sherif-multi-platform-bot
 Once installed globally, run:
 
 ```bash
-sherif-multi-bot
+shegraf
 ```
 
 Behind the scenes this runs the CLI script at `src/index.js` which:
@@ -123,7 +120,7 @@ Main behavior:
 2. Run:
 
    ```bash
-   sherif-multi-bot
+   shegraf
    ```
 
 3. In the terminal you will see:
@@ -192,7 +189,7 @@ On button press, the bot replies with which color you selected.
 3. Run:
 
    ```bash
-   sherif-multi-bot
+   shegraf
    ```
 
 4. Open your bot chat and send `/start` or `/menu`.
@@ -241,7 +238,7 @@ When you click a button, it responds with an **embed**:
 6. Run:
 
    ```bash
-   sherif-multi-bot
+   shegraf
    ```
 
 7. In a text channel, type:
@@ -259,7 +256,7 @@ You can also use this package as a **library** inside your own Node.js project, 
 ### Install in your project
 
 ```bash
-npm install sherif-multi-platform-bot
+npm install shegraf
 ```
 
 ### Import and use
@@ -271,8 +268,9 @@ const {
   startWhatsApp,
   startTelegram,
   startDiscord,
-  startAll
-} = require("sherif-multi-platform-bot");
+  startAll,
+  createShegraf
+} = require("shegraf");
 
 // Option 1: Start everything (WhatsApp, Telegram, Discord) reading from env
 startAll();
@@ -298,11 +296,94 @@ startAll({
 startWhatsApp({ phoneNumber: "62812xxxxxxxx" });
 startTelegram({ token: "your-telegram-bot-token" });
 startDiscord({ token: "your-discord-bot-token", commandPrefix: "!" });
+
+// Option 4: Use high-level Shegraf wrapper
+const bot = createShegraf({
+  whatsapp: { phoneNumber: "62812xxxxxxxx" },
+  telegram: { token: "your-telegram-bot-token" },
+  discord: { token: "your-discord-bot-token", commandPrefix: "!" }
+});
+
+bot.start();
 ```
 
 All environment variables described in the previous sections (`WA_PHONE_NUMBER`, `TELEGRAM_BOT_TOKEN`, `DISCORD_BOT_TOKEN`, `COMMAND_PREFIX`) are still supported, but any explicit options you pass to the functions take precedence.
 
 You can combine this with your own configuration file (for example `config.js`) and other application logic.
+
+### Custom Telegram inline buttons (colored style)
+
+Telegram tidak mengizinkan ganti warna background tombol secara bebas, tapi kamu bisa
+meniru efek "berwarna" dengan emoji dan posisi tombol. Shegraf menyediakan opsi
+`menuButtons` di `TelegramOptions`.
+
+Contoh 1: tombol join group seperti banner merah/hijau:
+
+```js
+const { createShegraf } = require("shegraf");
+
+const bot = createShegraf({
+  telegram: {
+    token: "your-telegram-bot-token",
+    menuButtons: [
+      // Baris pertama
+      {
+        id: "join_group",
+        text: "🟥 Join Group",
+        url: "https://t.me/joinchat/xxxx",
+        row: 0
+      },
+      {
+        id: "group_ramadhan",
+        text: "🟩 Grup Ramadhan",
+        url: "https://t.me/joinchat/yyyy",
+        row: 0
+      },
+      // Baris kedua
+      {
+        id: "join_community",
+        text: "🟥 Join Community",
+        url: "https://t.me/joinchat/zzzz",
+        row: 1
+      }
+    ]
+  }
+});
+
+bot.start();
+```
+
+Setiap item `menuButtons`:
+
+- `text`: teks tombol (gunakan emoji warna seperti 🟥🟩🟦)
+- `url`: jika diisi, tombol menjadi link (Join Group, Join Channel, dll.)
+- `id`: callback data, dipakai jika tidak ada `url`
+- `row`: nomor baris (0, 1, 2, ...) untuk mengatur layout per baris
+- `replyText`: balasan custom saat tombol callback diklik (opsional)
+
+Contoh 2: preset "VPS menu" siap pakai (tanpa tulis semua tombol)
+
+```js
+const { createShegraf } = require("shegraf");
+
+const bot = createShegraf({
+  telegram: {
+    token: "your-telegram-bot-token",
+    menuPreset: "vps"
+  }
+});
+
+bot.start();
+```
+
+Preset `menuPreset: "vps"` otomatis membuat layout seperti:
+
+- 🟥 L-1 STATUS VPS, 🟥 L-1 VPS MENU, 🟥 L-1 CPANEL MENU (baris pertama)
+- 🟥 L-1 PROJECT MENU, 🟥 L-1 INSTALL MENU (baris kedua)
+- 🟥 L-1 TOOLS MENU, 🟥 L-1 CVPS MENU (baris ketiga)
+- 🟥 L-1 ENCRYPT MENU (baris keempat)
+
+User shegraf cukup mengatur token dan memanggil preset ini untuk mendapatkan inline menu bergaya VPS merah tanpa perlu define tombol manual.
 
 ---
 

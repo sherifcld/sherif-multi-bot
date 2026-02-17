@@ -1,10 +1,11 @@
 {
-  "name": "sherif-multi-platform-bot",
+  "name": "shegraf",
   "version": "1.0.0",
-  "description": "Bot multi-platform (WhatsApp Baileys, Telegram, Discord) dengan dukungan button.",
+  "description": "Shegraf: multi-platform bot helper for WhatsApp (Baileys), Telegram and Discord.",
   "main": "src/index.js",
+  "types": "index.d.ts",
   "bin": {
-    "sherif-multi-bot": "src/index.js"
+    "shegraf": "src/index.js"
   },
   "type": "commonjs",
   "scripts": {
